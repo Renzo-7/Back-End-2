@@ -46,29 +46,3 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Login error", err });
   }
 };
-
-export const getUsers = async (_req, res) => {
-  const users = await User.find();
-  res.json(users);
-};
-
-export const getUser = async (req, res) => {
-  const user = await User.findById(req.params.uid);
-  user ? res.json(user) : res.status(404).json({ message: "Not found" });
-};
-
-export const updateUser = async (req, res) => {
-  const data = req.body;
-  if (data.password) data.password = await hashPassword(data.password);
-  const updated = await User.findByIdAndUpdate(req.params.uid, data, {
-    new: true,
-  });
-  updated ? res.json(updated) : res.status(404).json({ message: "Not found" });
-};
-
-export const deleteUser = async (req, res) => {
-  const deleted = await User.findByIdAndDelete(req.params.uid);
-  deleted
-    ? res.json({ message: "User deleted" })
-    : res.status(404).json({ message: "Not found" });
-};
