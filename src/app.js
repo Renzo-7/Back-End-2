@@ -10,7 +10,7 @@ dotenv.config();
 import productsRouter from "./routes/products.routes.js";
 import viewsRouter from "./routes/views.routes.js";
 import cartsRouter from "./routes/carts.routes.js";
-import userRouter from "./routes/users.routes.js";
+import usersRouter from "./routes/users.routes.js";
 import sessionsRouter from "./routes/sessions.routes.js";
 
 import setupWebSockets from "./sockets/socketHandler.js";
@@ -40,7 +40,7 @@ connectMongoDB();
 // Endpoints
 app.use("/api/carts", cartsRouter);
 app.use("/api/products", productsRouter);
-app.use("/api/users", userRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/", viewsRouter);
 

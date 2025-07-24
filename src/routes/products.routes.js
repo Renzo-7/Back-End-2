@@ -1,8 +1,10 @@
 import { Router } from "express";
+import { auth } from "../config/passport.js";
+import { authorize } from "../middlewares/authorize.js";
 import {
   getProducts,
-  getProductsbyId,
-  addProduct,
+  getProductById,
+  createProduct,
   updateProduct,
   deleteProduct,
 } from "../controllers/product.controller.js";
@@ -13,15 +15,15 @@ const router = Router();
 router.get("/", getProducts);
 
 // Obtener producto por ID
-router.get("/:pid", getProductsbyId);
+router.get("/:pid", getProductById);
 
-// Agregar un producto
-router.post("/", addProduct);
+// Agregar un producto (solo ADMIN)
+router.post("/", auth, authorize("ADMIN"), createProduct);
 
-// Actualizar un producto
-router.put("/:pid", updateProduct);
+// Actualizar un producto (solo ADMIN)
+router.put("/:pid", auth, authorize("ADMIN"), updateProduct);
 
-// Eliminar un producto
-router.delete("/:pid", deleteProduct);
+// Eliminar un producto (solo ADMIN)
+router.delete("/:pid", auth, authorize("ADMIN"), deleteProduct);
 
 export default router;

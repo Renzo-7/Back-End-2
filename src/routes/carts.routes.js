@@ -1,27 +1,42 @@
 import { Router } from "express";
+import { auth } from "../config/passport.js";
+import { authorize } from "../middlewares/authorize.js";
 import {
   createCart,
   getCartById,
-  getProductToCart,
-  deleteProductFromCart,
-  deleteAllProductsFromCart,
+  addProductToCart,
+  getCarts,
+  removeProductFromCart,
+  clearCart,
+  updateCart,
 } from "../controllers/cart.controller.js";
 
 const router = Router();
 
-// Crear un nuevo carrito vacío
-router.post("/", createCart);
+// Obtener todos los carritos
+router.get("/", getCarts);
 
 // Obtener los productos de un carrito
 router.get("/:cid", getCartById);
 
-// Agregar un producto al carrito (o incrementar cantidad si ya está)
-router.post("/:cid/product/:pid", getProductToCart);
+// Crear un nuevo carrito vacío
+router.post("/", createCart);
 
-// Eliminar un producto del carrito
-router.delete("/:cid/products/:pid", deleteProductFromCart);
+// Agregar un producto al carrito (solo USER)
+router.post("/:cid/product/:pid", auth, authorize("USER"), addProductToCart);
 
-// Eliminar todos los productos del carrito
-router.delete("/:cid", deleteAllProductsFromCart);
+// Eliminar un producto del carrito (solo USER)
+router.delete(
+  "/:cid/products/:pid",
+  auth,
+  authorize("USER"),
+  removeProductFromCart
+);
+
+// Eliminar todos los productos del carrito (solo USER)
+router.delete("/:cid", auth, authorize("USER"), clearCart);
+
+// Reemplazar productos del carrito (solo USER)
+router.put("/:cid", auth, authorize("USER"), updateCart);
 
 export default router;

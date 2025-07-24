@@ -1,10 +1,15 @@
-import Product from "../models/Product.js";
+import ProductService from "../services/product.service.js";
+
+const productService = new ProductService();
 
 export const getProducts = async (req, res) => {
   try {
     const { limit = 10, page = 1 } = req.query;
 
-    const products = await Product.paginate({}, { limit, page });
+    const products = await productService.getAllProductsService(
+      {},
+      { limit, page }
+    );
     res.status(200).json({ status: "success", payload: products });
   } catch (error) {
     res
@@ -13,9 +18,9 @@ export const getProducts = async (req, res) => {
   }
 };
 
-export const getProductsbyId = async (req, res) => {
+export const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.pid);
+    const product = await productService.getProductByIdService(req.params.pid);
     if (!product) {
       return res
         .status(404)
@@ -29,53 +34,32 @@ export const getProductsbyId = async (req, res) => {
   }
 };
 
-export const addProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
-    const savedProduct = await newProduct.save();
-    res.status(201).json({ status: "success", payload: savedProduct });
-  } catch (error) {
-    res.status(400).json({ status: "error", error: "Error al crear producto" });
+    const product = await productService.createProductService(req.body);
+    res.status(201).json({ status: "success", product });
+  } catch (err) {
+    res.status(400).json({ status: "error", message: err.message });
   }
 };
 
 export const updateProduct = async (req, res) => {
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
+    const product = await productService.updateProductService(
       req.params.pid,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
+      req.body
     );
-    if (!updatedProduct) {
-      return res
-        .status(404)
-        .json({ status: "error", error: "Producto no encontrado" });
-    }
-    res.status(200).json({ status: "success", payload: updatedProduct });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ status: "error", error: "Error al actualizar producto" });
+    res.json({ status: "success", product });
+  } catch (err) {
+    res.status(400).json({ status: "error", message: err.message });
   }
 };
 
 export const deleteProduct = async (req, res) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.pid);
-    if (!deletedProduct) {
-      return res
-        .status(404)
-        .json({ status: "error", error: "Producto no encontrado" });
-    }
-    res
-      .status(200)
-      .json({ status: "success", message: "Producto eliminado correctamente" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", error: "Error al eliminar producto" });
+    await productService.deleteProductService(req.params.pid);
+    res.json({ status: "success", message: "Producto eliminado" });
+  } catch (err) {
+    res.status(400).json({ status: "error", message: err.message });
   }
 };
